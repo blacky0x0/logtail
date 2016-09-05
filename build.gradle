@@ -1,0 +1,28 @@
+buildscript {
+	ext { springBootVersion = '1.4.0.RELEASE' }
+	repositories { jcenter() }
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply {
+	plugin 'java'
+	plugin 'spring-boot'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
+repositories { jcenter() }
+defaultTasks 'clean', 'bootRun'
+
+dependencies {
+	compile("org.springframework.boot:spring-boot-starter-web")
+	compile("commons-io:commons-io:2.4")
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '3.0'
+	distributionUrl="https://services.gradle.org/distributions/gradle-$gradleVersion-bin.zip"
+}
