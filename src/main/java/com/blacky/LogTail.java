@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -23,6 +25,7 @@ public class LogTail {
 
     public static final String HTML_BREAKLINE = "<br>";
     public static final int HTML_BREAKLINE_LENGTH = HTML_BREAKLINE.length();
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm:ss");
 
     public static final int MAX_LINES = 500;
     public static int COUNT_DOWN = MAX_LINES;
@@ -31,7 +34,18 @@ public class LogTail {
 
     @RequestMapping("/")
     String home() {
-        return String.format("<div style='margin-left:40px'>%s</div>", SERVER_LOG.toString());
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("<html style='margin:0; padding:0;'>");
+        sb.append("<body style='background:black; line-height:1;'>");
+        sb.append("<div style='margin-left:10px; color:#ddd; font-family:monospace; font-size:12px; text-indent:-14px; line-height:17px; vertical-align: baseline; word-wrap: break-word;'>");
+
+        sb.append(SERVER_LOG.toString());
+
+        sb.append("</div>");
+        sb.append("</body>");
+        sb.append("</html>");
+        return sb.toString();
     }
 
     public static void main(String[] args) throws Exception {
@@ -44,8 +58,10 @@ public class LogTail {
 
     public static class MyTailerListener extends TailerListenerAdapter {
         public void handle(String line) {
-            LINE_LENGTH_QUEUE.add(line.length() + HTML_BREAKLINE_LENGTH);
-            SERVER_LOG.append(line).append(HTML_BREAKLINE);
+            String date = DATE_FORMAT.format(new Date());
+
+            LINE_LENGTH_QUEUE.add(date.length() + 1 + line.length() + HTML_BREAKLINE_LENGTH);
+            SERVER_LOG.append(date).append(" ").append(line).append(HTML_BREAKLINE);
 
             if (COUNT_DOWN > 0) {
                 COUNT_DOWN--;
